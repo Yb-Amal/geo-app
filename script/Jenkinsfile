@@ -1,27 +1,31 @@
-pipeline {
-    agent any 
-    tools {
+pipeline{
+    agent any
+    tools{
         maven 'M2_HOME'
     }
-    stages {
-        stage("sonar-scan") {
-            steps {
-                withSonarQubeEnv('sonarQube') {
-                    sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Yb-Amal_geo-app'
-                }
+    stages{
+        stage('clean'){
+            steps{
+                sh 'mvn clean'
             }
         }
-        stage("maven") {
-            steps {
-                sh 'mvn clean validate compile install test package'
+        stage('install'){
+            steps{
+                sh 'mvn install'
             }
         }
-        stage('upload artifact') {
-            steps {
-                sh 'curl -uadmin:AP8gcgmmset5jeYChTJYDN6XmDd -T target/bio*.jar "http://ec2-100-25-144-234.compute-1.amazonaws.com:8081/artifactory/geolocation/geo/bio_${BUILD_ID}.jar"'
+        stage('package'){
+            steps{
+                sh 'mvn package'
             }
         }
+        stage('artfactory'){
+            steps{
+                sh 'curl -uAdmin:APBLMvC9LuW1SZwNeJouaRZ2xBh -T target/bio*.jar "http://100.26.228.10:8081/artifactory/geolocation/ybamal"'
+            }
+        }
+    
+       
     }
 }
-
 
